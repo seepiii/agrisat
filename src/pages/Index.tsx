@@ -89,7 +89,6 @@ const Index = () => {
         tips: data.tips,
         aiContext: data.ai_context
       };
-      
       setAnalysisData(analysisResult);
       toast({
         title: "✅ Analysis Complete",

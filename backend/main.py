@@ -23,8 +23,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Initialize OpenAI client (will be initialized when needed)
+client = None
+
+def get_openai_client():
+    global client
+    if client is None:
+        try:
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        except TypeError:
+            # Handle older OpenAI client versions
+            try:
+                client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), http_client=None)
+            except TypeError:
+                # Fallback for very old versions
+                import httpx
+                http_client = httpx.Client()
+                client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), http_client=http_client)
+    return client
 
 # Request models
 class SMAPAnalysisRequest(BaseModel):
@@ -175,7 +191,7 @@ async def handle_followup_question(request: FollowUpRequest):
         chat_context.append({"role": "user", "content": request.question})
         
         # Generate response using OpenAI
-        response = client.chat.completions.create(
+        response = get_openai_client().chat.completions.create(
             model="gpt-4o-mini",
             messages=chat_context,
             temperature=0.7,
@@ -251,7 +267,7 @@ async def generate_ai_tips(subregion: str, region: str, date: str, soil_moisture
 Consider the seasonal timing and regional climate patterns.
 Provide 3 concise, specific tips for farmers or land managers in this region based on this soil condition and time of year."""
 
-        response = client.chat.completions.create(
+        response = get_openai_client().chat.completions.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
