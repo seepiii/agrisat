@@ -82,6 +82,9 @@ const AnalysisResults = ({
                 {data.soilMoisture.toFixed(3)}
                 <span className="text-lg text-muted-foreground ml-2">m³/m³</span>
               </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                Volumetric Water Content
+              </div>
               <div className="mt-2">
                 <div className="w-full bg-muted/50 rounded-full h-2">
                   <div 
@@ -150,7 +153,13 @@ const AnalysisResults = ({
                   </div>
                   <div className="p-3 bg-primary/10 rounded-lg border-l-4 border-primary ml-4">
                     <div className="text-sm font-medium text-primary mb-1">AI Response:</div>
-                    <p className="text-sm leading-relaxed">{qa.answer}</p>
+                    <div className="text-sm leading-relaxed">
+                      {qa.answer.includes('•') || qa.answer.length > 200 ? (
+                        <div className="whitespace-pre-line">{qa.answer}</div>
+                      ) : (
+                        <p>{qa.answer}</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

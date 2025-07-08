@@ -17,13 +17,16 @@ interface Region {
 
 // Convert lat/lon to 3D sphere coordinates
 const latLonToVector3 = (lat: number, lon: number, radius: number = 2) => {
-  const phi = (lat * Math.PI) / 180;
-  const theta = ((lon - 180) * Math.PI) / 180;
-  
-  const x = -(radius * Math.cos(phi) * Math.cos(theta)) - 0.1;
-  const y = radius * Math.sin(phi) - 0.15;
+  // Tweak these offsets for visual alignment
+  const latOffset = -19; // slightly down
+  const lonOffset = -7;  // slightly right
+  const phi = ((lat + latOffset) * Math.PI) / 180;
+  const theta = (((lon + lonOffset) - 180) * Math.PI) / 180;
+
+  const x = -(radius * Math.cos(phi) * Math.cos(theta));
+  const y = radius * Math.sin(phi);
   const z = radius * Math.cos(phi) * Math.sin(theta);
-  
+
   return [x, y, z];
 };
 
@@ -133,6 +136,46 @@ const regions: Region[] = [
     bbox: [29.5, 29.5, 32.5, 31.5]
   },
   {
+    id: 'sahel-region',
+    name: 'Sahel Region',
+    country: 'West Africa',
+    position: { lat: 15.0, lon: -5.0 },
+    subregions: ['Southern Mali', 'Northern Burkina Faso', 'Eastern Senegal'],
+    bbox: [-10.0, 10.0, 5.0, 20.0]
+  },
+  {
+    id: 'ethiopian-highlands',
+    name: 'Ethiopian Highlands',
+    country: 'Ethiopia',
+    position: { lat: 9.0, lon: 39.0 },
+    subregions: ['Central Highlands', 'Northern Highlands', 'Southern Highlands'],
+    bbox: [35.0, 5.0, 45.0, 15.0]
+  },
+  {
+    id: 'lake-victoria-basin',
+    name: 'Lake Victoria Basin',
+    country: 'East Africa',
+    position: { lat: -1.0, lon: 33.0 },
+    subregions: ['Western Kenya', 'Northern Tanzania', 'Southern Uganda'],
+    bbox: [30.0, -3.0, 36.0, 3.0]
+  },
+  {
+    id: 'niger-delta',
+    name: 'Niger Delta',
+    country: 'Nigeria',
+    position: { lat: 5.0, lon: 6.0 },
+    subregions: ['Rivers State', 'Delta State', 'Bayelsa State'],
+    bbox: [4.0, 4.0, 8.0, 6.0]
+  },
+  {
+    id: 'zambia-plateau',
+    name: 'Zambia Plateau',
+    country: 'Zambia',
+    position: { lat: -15.0, lon: 28.0 },
+    subregions: ['Central Province', 'Copperbelt', 'Eastern Province'],
+    bbox: [25.0, -18.0, 32.0, -12.0]
+  },
+  {
     id: 'north-china',
     name: 'North China Plain',
     country: 'China',
@@ -147,6 +190,46 @@ const regions: Region[] = [
     position: { lat: 29.0, lon: 71.0 },
     subregions: ['Punjab Pakistan', 'Sindh Province', 'Upper Indus'],
     bbox: [67.0, 24.0, 75.0, 34.0]
+  },
+  {
+    id: 'thailand-central',
+    name: 'Central Thailand',
+    country: 'Thailand',
+    position: { lat: 14.0, lon: 100.5 },
+    subregions: ['Bangkok Metropolitan', 'Central Plains', 'Chao Phraya Basin'],
+    bbox: [98.0, 12.0, 103.0, 16.0]
+  },
+  {
+    id: 'vietnam-mekong',
+    name: 'Mekong Delta',
+    country: 'Vietnam',
+    position: { lat: 10.0, lon: 105.5 },
+    subregions: ['Upper Delta', 'Middle Delta', 'Coastal Delta'],
+    bbox: [104.0, 8.0, 107.0, 12.0]
+  },
+  {
+    id: 'indonesia-java',
+    name: 'Java Island',
+    country: 'Indonesia',
+    position: { lat: -7.5, lon: 110.0 },
+    subregions: ['West Java', 'Central Java', 'East Java'],
+    bbox: [105.0, -9.0, 115.0, -6.0]
+  },
+  {
+    id: 'malaysia-peninsular',
+    name: 'Peninsular Malaysia',
+    country: 'Malaysia',
+    position: { lat: 4.0, lon: 102.0 },
+    subregions: ['Northern Region', 'Central Region', 'Southern Region'],
+    bbox: [100.0, 1.0, 104.0, 7.0]
+  },
+  {
+    id: 'philippines-luzon',
+    name: 'Luzon Island',
+    country: 'Philippines',
+    position: { lat: 15.0, lon: 121.0 },
+    subregions: ['Northern Luzon', 'Central Luzon', 'Southern Luzon'],
+    bbox: [118.0, 13.0, 124.0, 17.0]
   }
 ];
 

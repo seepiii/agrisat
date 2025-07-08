@@ -195,10 +195,17 @@ async def handle_followup_question(request: FollowUpRequest):
             model="gpt-4o-mini",
             messages=chat_context,
             temperature=0.7,
-            max_tokens=300
+            max_tokens=400
         )
         
         answer = response.choices[0].message.content.strip()
+        
+        # Format long answers with bullet points
+        if len(answer) > 200 and not answer.startswith('•'):
+            # Split into sentences and format as bullet points
+            sentences = [s.strip() for s in answer.split('.') if s.strip()]
+            if len(sentences) > 2:
+                answer = '\n'.join([f"• {sentence}" for sentence in sentences if sentence])
         
         return FollowUpResponse(
             success=True,
@@ -306,6 +313,68 @@ def get_season(date_str: str) -> str:
         return "Fall"
     else:
         return "Winter"
+
+def applyRegionalCharacteristics(baseMoisture: float, region: str, subregion: str) -> float:
+    """Apply regional climate characteristics to soil moisture values"""
+    region_lower = region.lower()
+    subregion_lower = subregion.lower()
+    
+    # Southeast Asian adjustments
+    if region_lower in ['thailand', 'central thailand']:
+        if 'bangkok' in subregion_lower:
+            # Bangkok area has urban influence and irrigation
+            return max(0.15, min(0.4, baseMoisture * 1.1))
+        elif 'chao phraya' in subregion_lower:
+            # Chao Phraya basin has good irrigation
+            return max(0.2, min(0.45, baseMoisture * 1.2))
+        else:
+            # Central plains have moderate moisture
+            return max(0.15, min(0.35, baseMoisture * 1.0))
+    
+    elif region_lower in ['vietnam', 'mekong delta']:
+        # Mekong Delta has high rainfall and irrigation
+        return max(0.25, min(0.5, baseMoisture * 1.3))
+    
+    elif region_lower in ['indonesia', 'java island']:
+        if 'west java' in subregion_lower:
+            # West Java has high rainfall
+            return max(0.25, min(0.45, baseMoisture * 1.2))
+        elif 'central java' in subregion_lower:
+            # Central Java has moderate rainfall
+            return max(0.2, min(0.4, baseMoisture * 1.1))
+        else:
+            # East Java tends to be drier
+            return max(0.15, min(0.35, baseMoisture * 0.9))
+    
+    elif region_lower in ['malaysia', 'peninsular malaysia']:
+        # Malaysia has high rainfall year-round
+        return max(0.25, min(0.5, baseMoisture * 1.3))
+    
+    elif region_lower in ['philippines', 'luzon island']:
+        if 'northern luzon' in subregion_lower:
+            # Northern Luzon has typhoon influence
+            return max(0.2, min(0.45, baseMoisture * 1.1))
+        elif 'central luzon' in subregion_lower:
+            # Central Luzon has good irrigation
+            return max(0.2, min(0.4, baseMoisture * 1.0))
+        else:
+            # Southern Luzon has moderate rainfall
+            return max(0.18, min(0.38, baseMoisture * 0.95))
+    
+    # India adjustments (existing)
+    elif region_lower in ['india', 'punjab']:
+        if 'punjab' in subregion_lower:
+            # Punjab is heavily irrigated
+            return max(0.2, min(0.35, baseMoisture * 1.1))
+        elif 'kerala' in subregion_lower:
+            # Kerala has high rainfall
+            return max(0.25, min(0.45, baseMoisture * 1.3))
+        elif 'ganges' in subregion_lower:
+            # Ganges basin has variable moisture
+            return max(0.15, min(0.35, baseMoisture * 1.0))
+    
+    # Default: ensure reasonable range
+    return max(0.05, min(0.45, baseMoisture))
 
 @app.get("/health")
 async def health_check():

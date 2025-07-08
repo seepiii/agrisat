@@ -14,11 +14,11 @@ const Header = () => {
                 className="w-full h-full object-cover"
               />
             </div>
-            <div>
+            <div className="text-left">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-primary via-accent to-space.green bg-clip-text text-transparent">
-                SMAP Soil Insights
+                Agrisat
               </h1>
-              <p className="text-sm text-muted-foreground">NASA Satellite Soil Moisture Analysis</p>
+              <p className="text-sm text-muted-foreground">NASA Soil Moisture Active Passive Data Analysis</p>
             </div>
           </div>
           

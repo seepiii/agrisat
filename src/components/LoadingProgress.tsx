@@ -38,7 +38,7 @@ const LoadingProgress = ({ stage, progress }: LoadingProgressProps) => {
             {progress > 25 && <div>📡 PROCESSING TASKS | ████████████████████ 100%</div>}
             {progress > 50 && <div>📊 COLLECTING RESULTS | ████████████████████ 100%</div>}
             {progress > 75 && <div>🤖 GENERATING AI INSIGHTS | ████████████████████ 100%</div>}
-            {progress === 100 && <div className="text-yellow-400">✅ Analysis complete!</div>}
+            {progress === 100 && <div className="text-yellow-400">⏳ Analysis Loading...</div>}
           </div>
         </div>
       </CardContent>

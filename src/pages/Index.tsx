@@ -55,8 +55,11 @@ const Index = () => {
         description: "Connecting to NASA's satellite database...",
       });
 
-      // Call local backend directly for real NASA data
-      const response = await fetch('http://localhost:8000/analyze', {
+      // Use environment variable for backend URL, fallback to localhost for development
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+      
+      // Call backend for real NASA data
+      const response = await fetch(`${backendUrl}/analyze`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,8 +118,11 @@ const Index = () => {
         throw new Error('No analysis data available. Please analyze a region first.');
       }
 
-      // Call local backend directly for follow-up questions
-      const response = await fetch('http://localhost:8000/followup', {
+      // Use environment variable for backend URL, fallback to localhost for development
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+      // Call backend for follow-up questions
+      const response = await fetch(`${backendUrl}/followup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,7 +175,7 @@ const Index = () => {
         {/* Hero Section */}
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold mb-6 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-fade-in">
-            Soil Moisture Intelligence from Space
+            Agrisat - Soil Moisture Intelligence from Space
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
             Harness the power of NASA's SMAP satellite data with cutting-edge AI insights for precision agricultural decision-making

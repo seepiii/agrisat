@@ -239,6 +239,56 @@ function applyRegionalCharacteristics(baseMoisture: number, region: string, subr
   const regionLower = region.toLowerCase();
   const subregionLower = subregion.toLowerCase();
   
+  // Southeast Asian adjustments
+  if (regionLower.includes('thailand') || regionLower.includes('central thailand')) {
+    if (subregionLower.includes('bangkok')) {
+      // Bangkok area has urban influence and irrigation
+      return Math.max(0.15, Math.min(0.4, baseMoisture * 1.1));
+    } else if (subregionLower.includes('chao phraya')) {
+      // Chao Phraya basin has good irrigation
+      return Math.max(0.2, Math.min(0.45, baseMoisture * 1.2));
+    } else {
+      // Central plains have moderate moisture
+      return Math.max(0.15, Math.min(0.35, baseMoisture * 1.0));
+    }
+  }
+  
+  if (regionLower.includes('vietnam') || regionLower.includes('mekong delta')) {
+    // Mekong Delta has high rainfall and irrigation
+    return Math.max(0.25, Math.min(0.5, baseMoisture * 1.3));
+  }
+  
+  if (regionLower.includes('indonesia') || regionLower.includes('java island')) {
+    if (subregionLower.includes('west java')) {
+      // West Java has high rainfall
+      return Math.max(0.25, Math.min(0.45, baseMoisture * 1.2));
+    } else if (subregionLower.includes('central java')) {
+      // Central Java has moderate rainfall
+      return Math.max(0.2, Math.min(0.4, baseMoisture * 1.1));
+    } else {
+      // East Java tends to be drier
+      return Math.max(0.15, Math.min(0.35, baseMoisture * 0.9));
+    }
+  }
+  
+  if (regionLower.includes('malaysia') || regionLower.includes('peninsular malaysia')) {
+    // Malaysia has high rainfall year-round
+    return Math.max(0.25, Math.min(0.5, baseMoisture * 1.3));
+  }
+  
+  if (regionLower.includes('philippines') || regionLower.includes('luzon island')) {
+    if (subregionLower.includes('northern luzon')) {
+      // Northern Luzon has typhoon influence
+      return Math.max(0.2, Math.min(0.45, baseMoisture * 1.1));
+    } else if (subregionLower.includes('central luzon')) {
+      // Central Luzon has good irrigation
+      return Math.max(0.2, Math.min(0.4, baseMoisture * 1.0));
+    } else {
+      // Southern Luzon has moderate rainfall
+      return Math.max(0.18, Math.min(0.38, baseMoisture * 0.95));
+    }
+  }
+  
   // California adjustments
   if (regionLower.includes('california')) {
     if (subregionLower.includes('central valley')) {
