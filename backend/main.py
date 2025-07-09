@@ -88,11 +88,22 @@ async def startup_event():
     """Initialize Earthdata login on startup"""
     try:
         print("🔐 Logging into NASA Earthdata...")
-        login(strategy="netrc")
+        
+        # Try to use environment variables first
+        nasa_username = os.getenv("NASA_USERNAME")
+        nasa_password = os.getenv("NASA_PASSWORD")
+        
+        if nasa_username and nasa_password:
+            print("🔑 Using environment variables for NASA credentials")
+            login(strategy="interactive", username=nasa_username, password=nasa_password)
+        else:
+            print("📁 Using .netrc file for NASA credentials")
+            login(strategy="netrc")
+            
         print("✅ Successfully logged into NASA Earthdata")
     except Exception as e:
         print(f"⚠️ Earthdata login failed: {e}")
-        print("Please ensure you have configured .netrc with your Earthdata credentials")
+        print("Please ensure you have configured NASA credentials in environment variables or .netrc file")
 
 @app.get("/")
 async def root():
