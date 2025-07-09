@@ -58,6 +58,10 @@ const Index = () => {
       // Use environment variable for backend URL, fallback to localhost for development
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
       
+      // Debug: Log the backend URL being used
+      console.log('🔗 Backend URL:', backendUrl);
+      console.log('🌍 Environment:', import.meta.env.MODE);
+      
       // Call backend for real NASA data
       const response = await fetch(`${backendUrl}/analyze`, {
         method: 'POST',
@@ -121,6 +125,9 @@ const Index = () => {
 
       // Use environment variable for backend URL, fallback to localhost for development
       const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
+
+      // Debug: Log the backend URL being used
+      console.log('🔗 Follow-up Backend URL:', backendUrl);
 
       // Call backend for follow-up questions
       const response = await fetch(`${backendUrl}/followup`, {
