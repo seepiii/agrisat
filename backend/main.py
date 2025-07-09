@@ -23,7 +23,9 @@ app.add_middleware(
         "https://agrisat.world",
         "https://www.agrisat.world",
         "https://smap-project-sampadaap-oqw54delw-seepiiis-projects.vercel.app",
-        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app"
+        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app",
+        "https://*.onrender.com",
+        "https://*.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],

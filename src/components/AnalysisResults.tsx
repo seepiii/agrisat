@@ -67,7 +67,7 @@ const AnalysisResults = ({
                 </span>
               </CardDescription>
             </div>
-            <Badge variant={moistureInfo.color as any} className="text-lg px-3 py-1">
+            <Badge variant={moistureInfo.color as "default" | "secondary" | "destructive"} className="text-lg px-3 py-1">
               {moistureInfo.icon} {moistureInfo.level}
             </Badge>
           </div>

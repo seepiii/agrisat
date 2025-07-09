@@ -140,7 +140,7 @@ async function processHDF5File(
       try {
         const offset = dataOffset + (i * 4);
         if (offset + 4 <= buffer.byteLength) {
-          let value = dataView.getFloat32(offset, true); // little-endian
+          const value = dataView.getFloat32(offset, true); // little-endian
           
           // SMAP uses -9999 as fill value (invalid data)
           if (value !== -9999 && value > 0 && value < 1) {
@@ -186,7 +186,7 @@ async function getRegionalSoilMoisture(
   region: string, 
   subregion: string, 
   date: string, 
-  granule: any
+  granule: Record<string, unknown>
 ): Promise<number> {
   try {
     console.log('🌍 Extracting regional data from satellite metadata...');

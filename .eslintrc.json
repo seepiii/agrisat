@@ -1,0 +1,7 @@
+{
+  "extends": ["@eslint/js"],
+  "rules": {
+    "@typescript-eslint/no-empty-object-type": "warn",
+    "react-refresh/only-export-components": "warn"
+  }
+} 

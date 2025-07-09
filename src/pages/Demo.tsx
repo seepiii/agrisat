@@ -74,11 +74,12 @@ const Demo = () => {
         description: `Realistic data generated for ${subregion}`,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Demo Analysis Error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Unable to generate demo data. Please try again.";
       toast({
         title: "❌ Analysis Failed",
-        description: error.message || "Unable to generate demo data. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -109,11 +110,12 @@ const Demo = () => {
         description: "Your question has been answered using simulated agricultural AI.",
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Demo Follow-up Error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Please try your question again.";
       toast({
         title: "❌ Failed to Generate Response",
-        description: error.message || "Please try your question again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

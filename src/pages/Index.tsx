@@ -98,11 +98,12 @@ const Index = () => {
         description: `Real SMAP data retrieved for ${subregion}`,
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('SMAP Analysis Error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Unable to retrieve SMAP data. Please try again.";
       toast({
         title: "❌ Analysis Failed",
-        description: error.message || "Unable to retrieve SMAP data. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -155,11 +156,12 @@ const Index = () => {
         description: "Your question has been answered using real agricultural AI.",
       });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Follow-up AI Error:', error);
+      const errorMessage = error instanceof Error ? error.message : "Please try your question again.";
       toast({
         title: "❌ Failed to Generate Response",
-        description: error.message || "Please try your question again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
