@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: smap-backend
+    name: agrisat-backend
     runtime: python
     pythonVersion: "3.10"
     buildCommand: "pip install -r requirements.txt"
@@ -11,4 +11,6 @@ services:
       - key: NASA_USERNAME
         sync: false
       - key: NASA_PASSWORD
-        sync: false 
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.10" 
