@@ -40,22 +40,6 @@ const regions: Region[] = [
     bbox: [73.8, 29.5, 76.5, 32.5]
   },
   {
-    id: 'kerala',
-    name: 'Kerala',
-    country: 'India', 
-    position: { lat: 10.0, lon: 76.5 },
-    subregions: ['Northern Kerala', 'Central Kerala', 'Southern Kerala'],
-    bbox: [75.7, 8.2, 77.3, 10.2]
-  },
-  {
-    id: 'ganges',
-    name: 'Ganges Basin',
-    country: 'India',
-    position: { lat: 26.0, lon: 84.5 },
-    subregions: ['Upper Ganges', 'Middle Ganges', 'Lower Ganges'],
-    bbox: [80.0, 23.0, 89.0, 29.0]
-  },
-  {
     id: 'central-valley',
     name: 'Central Valley',
     country: 'California, USA',
@@ -127,14 +111,7 @@ const regions: Region[] = [
     subregions: ['Central Ukraine', 'Southern Ukraine', 'Eastern Plains'],
     bbox: [22.0, 45.0, 40.0, 52.0]
   },
-  {
-    id: 'nile-delta',
-    name: 'Nile Delta',
-    country: 'Egypt',
-    position: { lat: 30.5, lon: 31.0 },
-    subregions: ['Lower Delta', 'Upper Delta', 'Cairo Region'],
-    bbox: [29.5, 29.5, 32.5, 31.5]
-  },
+
   {
     id: 'sahel-region',
     name: 'Sahel Region',
