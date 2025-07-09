@@ -1,11 +1,9 @@
-numpy==1.24.3
+numpy==1.24.4
 earthaccess==0.8.0
-h5py==3.8.0
+h5py==3.9.0
 openai==1.12.0
 python-dotenv==1.0.0
 fastapi==0.104.1
 uvicorn==0.24.0
 pydantic==2.5.0
-python-multipart==0.0.6
-# Force numpy version to prevent binary incompatibility
-numpy>=1.24.3,<1.25.0 
+python-multipart==0.0.6 
