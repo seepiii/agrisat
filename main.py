@@ -23,7 +23,9 @@ app.add_middleware(
         "https://agrisat.world",
         "https://www.agrisat.world",
         "https://smap-project-sampadaap-oqw54delw-seepiiis-projects.vercel.app",
-        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app"
+        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app",
+        "https://*.onrender.com",
+        "https://*.vercel.app"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -89,21 +91,33 @@ async def startup_event():
     try:
         print("🔐 Logging into NASA Earthdata...")
         
-        # Try to use environment variables first
+        # Get NASA credentials from environment variables
         nasa_username = os.getenv("NASA_USERNAME")
         nasa_password = os.getenv("NASA_PASSWORD")
         
         if nasa_username and nasa_password:
-            print("🔑 Using environment variables for NASA credentials")
-            login(strategy="interactive", username=nasa_username, password=nasa_password)
-        else:
-            print("📁 Using .netrc file for NASA credentials")
-            login(strategy="netrc")
+            print(f"🔑 Using environment variables for NASA credentials (username: {nasa_username})")
+            # Create .netrc content dynamically
+            netrc_content = f"machine urs.earthdata.nasa.gov\n    login {nasa_username}\n    password {nasa_password}"
             
-        print("✅ Successfully logged into NASA Earthdata")
+            # Write to temporary .netrc file
+            import tempfile
+            temp_netrc = tempfile.NamedTemporaryFile(mode='w', delete=False)
+            temp_netrc.write(netrc_content)
+            temp_netrc.close()
+            
+            # Set environment variable to point to our .netrc file
+            os.environ['NETRC'] = temp_netrc.name
+            
+            login(strategy="netrc")
+            print("✅ Successfully logged into NASA Earthdata using environment variables")
+        else:
+            print("❌ NASA credentials not found in environment variables")
+            print("Please set NASA_USERNAME and NASA_PASSWORD in Render environment variables")
+            
     except Exception as e:
         print(f"⚠️ Earthdata login failed: {e}")
-        print("Please ensure you have configured NASA credentials in environment variables or .netrc file")
+        print("Please ensure you have configured NASA credentials in environment variables")
 
 @app.get("/")
 async def root():
