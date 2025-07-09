@@ -193,14 +193,7 @@ const regions: Region[] = [
     subregions: ['Northern Region', 'Central Region', 'Southern Region'],
     bbox: [100.0, 1.0, 104.0, 7.0]
   },
-  {
-    id: 'philippines-luzon',
-    name: 'Luzon Island',
-    country: 'Philippines',
-    position: { lat: 15.0, lon: 121.0 },
-    subregions: ['Northern Luzon', 'Central Luzon', 'Southern Luzon'],
-    bbox: [118.0, 13.0, 124.0, 17.0]
-  }
+
 ];
 
 // 3D Earth component
