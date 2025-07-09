@@ -25,7 +25,12 @@ app.add_middleware(
 )
 
 # Initialize OpenAI client
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai_api_key = os.getenv("OPENAI_API_KEY")
+if openai_api_key:
+    client = openai.OpenAI(api_key=openai_api_key)
+else:
+    client = None
+    print("⚠️ OPENAI_API_KEY not found - AI features will be disabled")
 
 # Request models
 class SMAPAnalysisRequest(BaseModel):
@@ -199,6 +204,14 @@ async def analyze_smap_data(request: SMAPAnalysisRequest):
 async def handle_followup_question(request: FollowUpRequest):
     """Handle follow-up questions about SMAP analysis"""
     try:
+        if not client:
+            return FollowUpResponse(
+                success=False,
+                question=request.question,
+                answer="",
+                error="OpenAI client not available"
+            )
+            
         # Prepare chat context
         chat_context = request.ai_context.copy()
         chat_context.append({"role": "user", "content": request.question})
@@ -270,6 +283,10 @@ def generate_interpretation(soil_moisture: float) -> str:
 async def generate_ai_tips(subregion: str, region: str, date: str, soil_moisture: float, interpretation: str) -> List[str]:
     """Generate AI-powered agricultural tips"""
     try:
+        if not client:
+            print("⚠️ OpenAI client not available - using fallback tips")
+            return ["Monitor soil conditions regularly", "Consider irrigation needs based on crop requirements", "Consult local agricultural extension services"]
+            
         from datetime import datetime
         date_obj = datetime.strptime(date, "%Y-%m-%d")
         current_month = date_obj.strftime('%B')
