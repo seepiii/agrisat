@@ -5,17 +5,10 @@ from typing import List, Optional
 import os
 from dotenv import load_dotenv
 from earthaccess import login, DataGranules, download
+import h5py
 import tempfile
 import shutil
-from openai import OpenAI
-
-# Try to import h5py, but handle gracefully if not available
-try:
-    import h5py
-    H5PY_AVAILABLE = True
-except ImportError:
-    H5PY_AVAILABLE = False
-    print("⚠️ h5py not available - using fallback data processing")
+import openai
 
 load_dotenv()
 
@@ -24,39 +17,14 @@ app = FastAPI(title="SMAP Analysis API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8080",
-        "http://localhost:3000", 
-        "https://agrisat.world",
-        "https://www.agrisat.world",
-        "https://smap-project-sampadaap-oqw54delw-seepiiis-projects.vercel.app",
-        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app",
-        "https://*.onrender.com",
-        "https://*.vercel.app"
-    ],
+    allow_origins=["*"],  # Configure this properly for production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize OpenAI client (will be initialized when needed)
-client = None
-
-def get_openai_client():
-    global client
-    if client is None:
-        try:
-            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-        except TypeError:
-            # Handle older OpenAI client versions
-            try:
-                client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), http_client=None)
-            except TypeError:
-                # Fallback for very old versions
-                import httpx
-                http_client = httpx.Client()
-                client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"), http_client=http_client)
-    return client
+# Initialize OpenAI client
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Request models
 class SMAPAnalysisRequest(BaseModel):
@@ -97,34 +65,11 @@ async def startup_event():
     """Initialize Earthdata login on startup"""
     try:
         print("🔐 Logging into NASA Earthdata...")
-        
-        # Get NASA credentials from environment variables
-        nasa_username = os.getenv("NASA_USERNAME")
-        nasa_password = os.getenv("NASA_PASSWORD")
-        
-        if nasa_username and nasa_password:
-            print(f"🔑 Using environment variables for NASA credentials (username: {nasa_username})")
-            # Create .netrc content dynamically
-            netrc_content = f"machine urs.earthdata.nasa.gov\n    login {nasa_username}\n    password {nasa_password}"
-            
-            # Write to temporary .netrc file
-            import tempfile
-            temp_netrc = tempfile.NamedTemporaryFile(mode='w', delete=False)
-            temp_netrc.write(netrc_content)
-            temp_netrc.close()
-            
-            # Set environment variable to point to our .netrc file
-            os.environ['NETRC'] = temp_netrc.name
-            
-            login(strategy="netrc")
-            print("✅ Successfully logged into NASA Earthdata using environment variables")
-        else:
-            print("❌ NASA credentials not found in environment variables")
-            print("Please set NASA_USERNAME and NASA_PASSWORD in Render environment variables")
-            
+        login(strategy="netrc")
+        print("✅ Successfully logged into NASA Earthdata")
     except Exception as e:
         print(f"⚠️ Earthdata login failed: {e}")
-        print("Please ensure you have configured NASA credentials in environment variables")
+        print("Please ensure you have configured .netrc with your Earthdata credentials")
 
 @app.get("/")
 async def root():
@@ -230,21 +175,14 @@ async def handle_followup_question(request: FollowUpRequest):
         chat_context.append({"role": "user", "content": request.question})
         
         # Generate response using OpenAI
-        response = get_openai_client().chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=chat_context,
             temperature=0.7,
-            max_tokens=400
+            max_tokens=300
         )
         
         answer = response.choices[0].message.content.strip()
-        
-        # Format long answers with bullet points
-        if len(answer) > 200 and not answer.startswith('•'):
-            # Split into sentences and format as bullet points
-            sentences = [s.strip() for s in answer.split('.') if s.strip()]
-            if len(sentences) > 2:
-                answer = '\n'.join([f"• {sentence}" for sentence in sentences if sentence])
         
         return FollowUpResponse(
             success=True,
@@ -263,13 +201,6 @@ async def handle_followup_question(request: FollowUpRequest):
 
 async def process_hdf5_file(hdf5_path: str, bbox: List[float], subregion: str) -> Optional[float]:
     """Process HDF5 file to extract soil moisture data"""
-    if not H5PY_AVAILABLE:
-        print("⚠️ h5py not available - using simulated data")
-        # Return simulated data based on region characteristics
-        import random
-        base_moisture = random.uniform(0.15, 0.35)
-        return applyRegionalCharacteristics(base_moisture, "Unknown", subregion)
-    
     try:
         with h5py.File(hdf5_path, "r") as f:
             # Access soil moisture data (same as your Python script)
@@ -320,7 +251,7 @@ async def generate_ai_tips(subregion: str, region: str, date: str, soil_moisture
 Consider the seasonal timing and regional climate patterns.
 Provide 3 concise, specific tips for farmers or land managers in this region based on this soil condition and time of year."""
 
-        response = get_openai_client().chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
@@ -359,68 +290,6 @@ def get_season(date_str: str) -> str:
         return "Fall"
     else:
         return "Winter"
-
-def applyRegionalCharacteristics(baseMoisture: float, region: str, subregion: str) -> float:
-    """Apply regional climate characteristics to soil moisture values"""
-    region_lower = region.lower()
-    subregion_lower = subregion.lower()
-    
-    # Southeast Asian adjustments
-    if region_lower in ['thailand', 'central thailand']:
-        if 'bangkok' in subregion_lower:
-            # Bangkok area has urban influence and irrigation
-            return max(0.15, min(0.4, baseMoisture * 1.1))
-        elif 'chao phraya' in subregion_lower:
-            # Chao Phraya basin has good irrigation
-            return max(0.2, min(0.45, baseMoisture * 1.2))
-        else:
-            # Central plains have moderate moisture
-            return max(0.15, min(0.35, baseMoisture * 1.0))
-    
-    elif region_lower in ['vietnam', 'mekong delta']:
-        # Mekong Delta has high rainfall and irrigation
-        return max(0.25, min(0.5, baseMoisture * 1.3))
-    
-    elif region_lower in ['indonesia', 'java island']:
-        if 'west java' in subregion_lower:
-            # West Java has high rainfall
-            return max(0.25, min(0.45, baseMoisture * 1.2))
-        elif 'central java' in subregion_lower:
-            # Central Java has moderate rainfall
-            return max(0.2, min(0.4, baseMoisture * 1.1))
-        else:
-            # East Java tends to be drier
-            return max(0.15, min(0.35, baseMoisture * 0.9))
-    
-    elif region_lower in ['malaysia', 'peninsular malaysia']:
-        # Malaysia has high rainfall year-round
-        return max(0.25, min(0.5, baseMoisture * 1.3))
-    
-    elif region_lower in ['philippines', 'luzon island']:
-        if 'northern luzon' in subregion_lower:
-            # Northern Luzon has typhoon influence
-            return max(0.2, min(0.45, baseMoisture * 1.1))
-        elif 'central luzon' in subregion_lower:
-            # Central Luzon has good irrigation
-            return max(0.2, min(0.4, baseMoisture * 1.0))
-        else:
-            # Southern Luzon has moderate rainfall
-            return max(0.18, min(0.38, baseMoisture * 0.95))
-    
-    # India adjustments (existing)
-    elif region_lower in ['india', 'punjab']:
-        if 'punjab' in subregion_lower:
-            # Punjab is heavily irrigated
-            return max(0.2, min(0.35, baseMoisture * 1.1))
-        elif 'kerala' in subregion_lower:
-            # Kerala has high rainfall
-            return max(0.25, min(0.45, baseMoisture * 1.3))
-        elif 'ganges' in subregion_lower:
-            # Ganges basin has variable moisture
-            return max(0.15, min(0.35, baseMoisture * 1.0))
-    
-    # Default: ensure reasonable range
-    return max(0.05, min(0.45, baseMoisture))
 
 @app.get("/health")
 async def health_check():
