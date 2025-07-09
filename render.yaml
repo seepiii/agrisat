@@ -11,4 +11,5 @@ services:
         sync: false
       - key: NASA_PASSWORD
         sync: false
-    autoDeploy: true 
+    autoDeploy: true
+    plan: free 
