@@ -136,14 +136,7 @@ const regions: Region[] = [
     subregions: ['Western Kenya', 'Northern Tanzania', 'Southern Uganda'],
     bbox: [30.0, -3.0, 36.0, 3.0]
   },
-  {
-    id: 'niger-delta',
-    name: 'Niger Delta',
-    country: 'Nigeria',
-    position: { lat: 5.0, lon: 6.0 },
-    subregions: ['Rivers State', 'Delta State', 'Bayelsa State'],
-    bbox: [4.0, 4.0, 8.0, 6.0]
-  },
+
   {
     id: 'zambia-plateau',
     name: 'Zambia Plateau',
