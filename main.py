@@ -5,10 +5,11 @@ from typing import List, Optional
 import os
 from dotenv import load_dotenv
 from earthaccess import login, DataGranules, download
-import h5py
 import tempfile
 import shutil
 import openai
+
+import h5py
 
 load_dotenv()
 
