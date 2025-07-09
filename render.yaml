@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: smap-backend
+    name: agrisat-backend
     runtime: python
     pythonVersion: "3.10"
     buildCommand: "pip install -r requirements.txt"
