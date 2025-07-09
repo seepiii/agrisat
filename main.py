@@ -27,7 +27,8 @@ app.add_middleware(
 # Initialize OpenAI client
 openai_api_key = os.getenv("OPENAI_API_KEY")
 if openai_api_key:
-    client = openai.OpenAI(api_key=openai_api_key)
+    openai.api_key = openai_api_key
+    client = openai
 else:
     client = None
     print("⚠️ OPENAI_API_KEY not found - AI features will be disabled")
@@ -217,7 +218,7 @@ async def handle_followup_question(request: FollowUpRequest):
         chat_context.append({"role": "user", "content": request.question})
         
         # Generate response using OpenAI
-        response = client.chat.completions.create(
+        response = client.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=chat_context,
             temperature=0.7,
@@ -297,7 +298,7 @@ async def generate_ai_tips(subregion: str, region: str, date: str, soil_moisture
 Consider the seasonal timing and regional climate patterns.
 Provide 3 concise, specific tips for farmers or land managers in this region based on this soil condition and time of year."""
 
-        response = client.chat.completions.create(
+        response = client.ChatCompletion.create(
             model="gpt-4o-mini",
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
