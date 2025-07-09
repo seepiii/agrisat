@@ -17,7 +17,14 @@ app = FastAPI(title="SMAP Analysis API", version="1.0.0")
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Configure this properly for production
+    allow_origins=[
+        "http://localhost:8080",
+        "http://localhost:3000", 
+        "https://agrisat.world",
+        "https://www.agrisat.world",
+        "https://smap-project-sampadaap-oqw54delw-seepiiis-projects.vercel.app",
+        "https://smap-project-sampadaap-ca9gnu6kg-seepiiis-projects.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
