@@ -1,4 +1,4 @@
-// Demo data service for Lovable export
+// Demo data service for AgriSat SMAP Intelligence Platform
 // Provides realistic soil moisture data without requiring NASA credentials
 
 interface DemoSoilMoistureData {
