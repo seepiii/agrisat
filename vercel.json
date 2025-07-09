@@ -8,10 +8,5 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "npm install",
-  "functions": {
-    "src/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  }
+  "installCommand": "npm install"
 } 
